@@ -1,38 +1,78 @@
-import React from 'react';
-import { useDrop } from 'react-dnd';
+import { useState, useRef } from 'react';
 import { IoMdClose } from "react-icons/io";
+import { ResizableBox } from "react-resizable";
+import "react-resizable/css/styles.css";
+import Draggable from "react-draggable";
 
-const GridTable = ({ onDrop, table, onRemove }) => {
-    const [{ isOver }, drop] = useDrop(() => ({
-        accept: "table",
-        drop: (item, monitor) => {
-            const offset = monitor.getClientOffset();
-            console.log('Sagar 1', item);
-            onDrop(item, offset)
-        },  // Call the drop function when something is dropped
-        collect: (monitor) => ({
-            isOver: monitor.isOver(),
-        }),
-    }));
+const GridTable = ({ table, onRemove, onUpdatePosition }) => {
+    const nodeRef = useRef(null);
     const position = table?.position || { x: 0, y: 0 };
+    const [size, setSize] = useState({ width: 200, height: 150 });
+    const [isResizing, setIsResizing] = useState(false);
+
+    const handleDragStop = (e, data) => {
+        onUpdatePosition(table.id, { x: data.x, y: data.y });
+    };
+
+    const gridWidth = (window.innerWidth * 0.75);
+    const gridHeight = window.innerHeight;
+
+    const bounds = {
+        left: 0,
+        top: 0,
+        right: gridWidth - size.width,
+        bottom: gridHeight - size.height,
+    };
     return (
-        <div ref={drop} className="grid_table" style={{
-            position: 'absolute',
-            backgroundColor: isOver ? "lightblue" : "white",
-            left: `${position?.x}px`,
-            top: `${position?.y}px`,
-            width: "200px",
-            height: "150px"
-        }}>
-            <div div className="grid_table_header" > {table?.name} {table && <span onClick={() => onRemove()} style={{ cursor: 'pointer' }}><IoMdClose /></span>}</div>
-            {
-                table?.columns.map((column) => {
-                    return (
-                        <div className="grid_table_column" key={column.column_id}>{column.name} {column.column_data_type}</div>
-                    )
-                })
-            }
-        </div>
+        <Draggable
+            position={{ x: position.x, y: position.y }}
+            onStop={handleDragStop}
+            bounds={bounds}
+            nodeRef={nodeRef}
+            disabled={isResizing}
+        >
+            <div className="grid_table" ref={nodeRef} style={{
+                position: 'absolute',
+                left: `${position?.x}px`,
+                top: `${position?.y}px`,
+                // width: "200px",
+                // height: "150px"
+            }}>
+                <ResizableBox
+                    width={size.width}
+                    height={size.height}
+                    minConstraints={[150, 100]}
+                    maxConstraints={[400, 300]}
+                    onResizeStop={(event, { size }) => { setSize(size); setIsResizing(false) }}
+                    onResizeStart={(e) => { e.stopPropagation(); setIsResizing(true) }}
+                    className="resizable_box"
+                >
+                    <div className='grid_table_content'>
+                        <div div className="grid_table_header" > {table?.name} {table && <span onClick={() => onRemove()} style={{ cursor: 'pointer' }}><IoMdClose /></span>}</div>
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Data Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    table?.columns.map((column) => (
+                                        <tr className="grid_table_column" key={column.column_id}>
+                                            <td>{column.name}</td>
+                                            <td>{column.column_data_type}</td>
+                                        </tr>
+                                    )
+                                    )
+                                }
+                            </tbody>
+                        </table>
+
+                    </div>
+                </ResizableBox>
+            </div>
+        </Draggable>
     )
 }
 

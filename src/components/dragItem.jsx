@@ -3,18 +3,20 @@ import { useDrag } from 'react-dnd';
 import { FaTable, FaColumns } from 'react-icons/fa';
 import { CiSquarePlus, CiSquareMinus } from "react-icons/ci";
 
-const SideTable = ({ table }) => {
+const SideTable = ({ table, addedTables }) => {
+    const isAlreadyAdded = addedTables.some((t) => t.id === table.id);
     const [isOpen, setIsOpen] = useState(false);
     const [{ isDragging }, drag] = useDrag(() => ({
         type: 'table',
         item: table,
+        canDrag: !isAlreadyAdded,
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
         }),
     }));
     return (
         <div
-            ref={drag}
+            ref={isAlreadyAdded ? null : drag}
             className="draggable_table"
             style={{ opacity: isDragging ? 0.5 : 1 }}
         >
