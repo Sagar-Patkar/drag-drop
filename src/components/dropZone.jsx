@@ -3,12 +3,14 @@ import { IoMdClose } from "react-icons/io";
 import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
 import Draggable from "react-draggable";
+import Column from "./columnDrag";
 
-const GridTable = ({ table, onRemove, onUpdatePosition }) => {
+const GridTable = ({ table, onRemove, onUpdatePosition, onConnect }) => {
     const nodeRef = useRef(null);
     const position = table?.position || { x: 0, y: 0 };
     const [size, setSize] = useState({ width: 200, height: 150 });
     const [isResizing, setIsResizing] = useState(false);
+    const [isColumnDragging, setIsColumnDragging] = useState(false);
 
     const handleDragStop = (e, data) => {
         onUpdatePosition(table.id, { x: data.x, y: data.y });
@@ -29,9 +31,9 @@ const GridTable = ({ table, onRemove, onUpdatePosition }) => {
             onStop={handleDragStop}
             bounds={bounds}
             nodeRef={nodeRef}
-            disabled={isResizing}
+            disabled={isResizing || isColumnDragging}
         >
-            <div className="grid_table" ref={nodeRef} style={{
+            <div className="grid_table" data-table-id={table.id} ref={nodeRef} style={{
                 position: 'absolute',
                 left: `${position?.x}px`,
                 top: `${position?.y}px`,
@@ -59,10 +61,13 @@ const GridTable = ({ table, onRemove, onUpdatePosition }) => {
                             <tbody>
                                 {
                                     table?.columns.map((column) => (
-                                        <tr className="grid_table_column" key={column.column_id}>
-                                            <td>{column.name}</td>
-                                            <td>{column.column_data_type}</td>
-                                        </tr>
+                                        <Column
+                                            key={column.column_id}
+                                            column={column}
+                                            tableId={table.id}
+                                            onConnect={onConnect}
+                                            setIsColumnDragging={setIsColumnDragging}
+                                        />
                                     )
                                     )
                                 }

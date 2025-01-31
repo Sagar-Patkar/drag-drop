@@ -7,10 +7,12 @@ import 'react-toastify/dist/ReactToastify.css';
 import { sideBarData } from "./tableData";
 import SideTable from "./components/dragItem";
 import GridTable from "./components/dropZone";
+import ConnectionLines from "./components/connectionLine";
 
 function App() {
   const [tableData, setTableData] = useState([]);
   const [gridTables, setGridTables] = useState([]);
+  const [connections, setConnections] = useState([]);
 
   useEffect(() => {
     setTableData(sideBarData);
@@ -38,6 +40,57 @@ function App() {
     const updatedItems = gridTables.filter((data) => Number(data.id) !== Number(index))
     setGridTables(updatedItems);
   };
+
+  // const handleConnection = (from, to) => {
+  //   const sourceTable = gridTables.find((table) => table.id === from.tableId);
+  //   const targetTable = gridTables.find((table) => table.id === to.tableId);
+
+  //   if (sourceTable && targetTable) {
+  //     const columnToMove = sourceTable.columns.find(col => col.column_id === from.columnId);
+  //     if (columnToMove) {
+  //       const updatedSourceColumns = sourceTable.columns.filter(col => col.column_id !== from.columnId);
+  //       const updatedTargetColumns = [...targetTable.columns, columnToMove];
+
+  //       setGridTables(prevTables => prevTables.map((table) => {
+  //         if (table.id === sourceTable.id) {
+  //           return { ...table, columns: updatedSourceColumns };
+  //         } else if (table.id === targetTable.id) {
+  //           return { ...table, columns: updatedTargetColumns };
+  //         }
+  //         return table;
+  //       }));
+  //     }
+  //   }
+  //   // setConnections((prevConnections) => [...prevConnections, { from, to }]);
+  // };
+
+  const handleConnection = (from, to) => {
+    setGridTables((prevTables) => {
+      const sourceTable = prevTables.find((table) => table.id === from.tableId);
+      const targetTable = prevTables.find((table) => table.id === to.tableId);
+
+      if (!sourceTable || !targetTable) return prevTables;
+      const columnToMove = sourceTable.columns.find((col) => col.column_id === from.columnId);
+
+      if (!columnToMove) return prevTables;
+      const updatedSourceColumns = sourceTable.columns.filter((col) => col.column_id !== from.columnId);
+      const updatedTargetColumns = [...targetTable.columns, columnToMove];
+      setConnections((prevConnections) => [
+        ...prevConnections,
+        { from: sourceTable.id, to: targetTable.id },
+      ]);
+      return prevTables.map((table) => {
+        if (table.id === sourceTable.id) {
+          return { ...table, columns: updatedSourceColumns };
+        } else if (table.id === targetTable.id) {
+          return { ...table, columns: updatedTargetColumns };
+        }
+        return table;
+      });
+    });
+  };
+
+
   const [{ isOver }, drop] = useDrop(() => ({
     accept: "table",
     drop: (item, monitor) => {
@@ -65,10 +118,10 @@ function App() {
           )}
         </div>
         <div className="grid" ref={drop}>
+          <ConnectionLines connections={connections} tables={gridTables} />
           {gridTables.length !== 0 && gridTables.map((table) => {
-            return <GridTable key={table.id} table={table} onRemove={() => handleRemoveItem(table.id)} onUpdatePosition={handleUpdatePosition} />
+            return <GridTable key={table.id} table={table} onRemove={() => handleRemoveItem(table.id)} onUpdatePosition={handleUpdatePosition} onConnect={handleConnection} />
           })}
-          {/* <GridTable onDrop={handleDrop} /> */}
         </div>
       </div>
     </DndProvider>

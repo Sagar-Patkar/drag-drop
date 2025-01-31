@@ -31,22 +31,22 @@ export const sideBarData = [
         columns: [
             {
                 column_id: 201,
-                name: 'Sagar',
+                name: 'PQR',
                 column_data_type: 'String'
             },
             {
                 column_id: 202,
-                name: 'Harsh',
+                name: 'XYZ',
                 column_data_type: 'String'
             },
             {
                 column_id: 203,
-                name: 'Sanjay',
+                name: 'ABC',
                 column_data_type: 'String'
             },
             {
                 column_id: 204,
-                name: 'Shubham',
+                name: 'EFQ',
                 column_data_type: 'String'
             },
         ]
