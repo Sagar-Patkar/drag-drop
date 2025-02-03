@@ -9,14 +9,15 @@ const SideTable = ({ table, addedTables }) => {
     const [{ isDragging }, drag] = useDrag(() => ({
         type: 'table',
         item: table,
-        canDrag: !isAlreadyAdded,
+        // canDrag: !isAlreadyAdded,
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
         }),
     }));
     return (
         <div
-            ref={isAlreadyAdded ? null : drag}
+            // ref={isAlreadyAdded ? null : drag}
+            ref={drag}
             className="draggable_table"
             style={{ opacity: isDragging ? 0.5 : 1 }}
         >

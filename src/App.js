@@ -20,8 +20,11 @@ function App() {
 
   const handleDrop = (item, offset) => {
     if (!offset) return;
-    const isAlreadyAdded = gridTables.some((table) => table.id === item.id);
-    const gridRect = document.querySelector(".grid").getBoundingClientRect();
+    // console.log('Sagar 0', gridTables);
+    const gridRect = document.querySelector(".grid")?.getBoundingClientRect();
+    if (!gridRect) {
+      return;
+    }
     const newItem = {
       ...item,
       position: {
@@ -29,13 +32,17 @@ function App() {
         y: offset.y - gridRect.top,
       },
     };
-    if (isAlreadyAdded) {
-      toast.error(`${item.name} already exists`)
-    } else {
-      setGridTables((prevItems) => [...prevItems, newItem]);
-    }
-  };
+    setGridTables((prevItems) => {
+      const isAlreadyAdded = prevItems.some((table) => table.id === item.id);
+      if (isAlreadyAdded) {
+        alert(`${item.name} already exists`)
+        return prevItems
+      }
 
+      return [...prevItems, newItem];
+    });
+
+  };
   const handleRemoveItem = (index) => {
     const updatedItems = gridTables.filter((data) => Number(data.id) !== Number(index))
     setGridTables(updatedItems);
