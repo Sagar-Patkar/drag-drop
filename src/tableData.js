@@ -5,22 +5,22 @@ export const sideBarData = [
         columns: [
             {
                 column_id: 101,
-                name: 'Sagar',
+                name: 'Employee 1',
                 column_data_type: 'String'
             },
             {
                 column_id: 102,
-                name: 'Harsh',
+                name: 'Employee 2',
                 column_data_type: 'String'
             },
             {
                 column_id: 103,
-                name: 'Sanjay',
+                name: 'Employee 3',
                 column_data_type: 'String'
             },
             {
                 column_id: 104,
-                name: 'Shubham',
+                name: 'Employee 4',
                 column_data_type: 'String'
             },
         ]
@@ -31,22 +31,48 @@ export const sideBarData = [
         columns: [
             {
                 column_id: 201,
-                name: 'PQR',
+                name: 'Admin 1',
                 column_data_type: 'String'
             },
             {
                 column_id: 202,
-                name: 'XYZ',
+                name: 'Admin 2',
                 column_data_type: 'String'
             },
             {
                 column_id: 203,
-                name: 'ABC',
+                name: 'Admin 3',
                 column_data_type: 'String'
             },
             {
                 column_id: 204,
-                name: 'EFQ',
+                name: 'Admin 4',
+                column_data_type: 'String'
+            },
+        ]
+    },
+    {
+        id: 3,
+        name: 'Patients',
+        columns: [
+            {
+                column_id: 301,
+                name: 'Patient 1',
+                column_data_type: 'String'
+            },
+            {
+                column_id: 302,
+                name: 'Patient 2',
+                column_data_type: 'String'
+            },
+            {
+                column_id: 303,
+                name: 'Patient 3',
+                column_data_type: 'String'
+            },
+            {
+                column_id: 304,
+                name: 'Patient 4',
                 column_data_type: 'String'
             },
         ]

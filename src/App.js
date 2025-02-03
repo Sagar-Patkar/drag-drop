@@ -35,7 +35,7 @@ function App() {
     setGridTables((prevItems) => {
       const isAlreadyAdded = prevItems.some((table) => table.id === item.id);
       if (isAlreadyAdded) {
-        alert(`${item.name} already exists`)
+        alert(`${item.name} table already exists`)
         return prevItems
       }
 
