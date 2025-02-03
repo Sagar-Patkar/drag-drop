@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { IoMdClose } from "react-icons/io";
 import { ResizableBox } from "react-resizable";
 import "react-resizable/css/styles.css";
@@ -7,27 +7,37 @@ import Column from "./columnDrag";
 
 const GridTable = ({ table, onRemove, onUpdatePosition, onConnect }) => {
     const nodeRef = useRef(null);
-    const position = table?.position || { x: 0, y: 0 };
+    const [bounds, setBounds] = useState({ left: 0, top: 0, right: 0, bottom: 0 });
+    // const position = table?.position || { x: 0, y: 0 };
     const [size, setSize] = useState({ width: 200, height: 150 });
     const [isResizing, setIsResizing] = useState(false);
     const [isColumnDragging, setIsColumnDragging] = useState(false);
 
     const handleDragStop = (e, data) => {
-        onUpdatePosition(table.id, { x: data.x, y: data.y });
+        const newX = Math.max(bounds.left, Math.min(data.x, bounds.right));
+        const newY = Math.max(bounds.top, Math.min(data.y, bounds.bottom));
+        onUpdatePosition(table.id, { x: newX, y: newY });
     };
 
-    const gridWidth = (window.innerWidth * 0.75);
-    const gridHeight = window.innerHeight;
-
-    const bounds = {
-        left: 0,
-        top: 0,
-        right: gridWidth - size.width,
-        bottom: gridHeight - size.height,
-    };
+    useEffect(() => {
+        const gridElement = document.querySelector(".grid");
+        if (gridElement) {
+            const gridRect = gridElement.getBoundingClientRect();
+            setBounds({
+                left: 0,
+                top: 0,
+                right: gridRect.width - size.width,
+                bottom: gridRect.height - size.height,
+            });
+        }
+    }, [size]);
     return (
         <Draggable
-            position={{ x: position.x, y: position.y }}
+            position={{
+                x: Math.min(Math.max(table.position.x, bounds.left), bounds.right),
+                y: Math.min(Math.max(table.position.y, bounds.top), bounds.bottom),
+
+            }}
             onStop={handleDragStop}
             bounds={bounds}
             nodeRef={nodeRef}
@@ -35,8 +45,8 @@ const GridTable = ({ table, onRemove, onUpdatePosition, onConnect }) => {
         >
             <div className="grid_table" data-table-id={table.id} ref={nodeRef} style={{
                 position: 'absolute',
-                left: `${position?.x}px`,
-                top: `${position?.y}px`,
+                // left: `${position?.x}px`,
+                // top: `${position?.y}px`,
                 // width: "200px",
                 // height: "150px"
             }}>
