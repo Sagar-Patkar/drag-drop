@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { DndProvider, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import './App.scss';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { sideBarData } from "./tableData";
 import SideTable from "./components/dragItem";
@@ -35,7 +35,11 @@ function App() {
     setGridTables((prevItems) => {
       const isAlreadyAdded = prevItems.some((table) => table.id === item.id);
       if (isAlreadyAdded) {
-        alert(`${item.name} table already exists`)
+        toast.error(`${item.name} table already exists`, {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
         return prevItems
       }
 
@@ -119,6 +123,7 @@ function App() {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="app">
+        <ToastContainer />
         <div className="sidebar">
           {tableData.map((table) =>
             <SideTable table={table} key={table.id} addedTables={gridTables} />
